@@ -23,3 +23,4 @@ What dirb was specifically, so i looked it up and it seems to be a penetration t
 ```
 dirb http://fakebank.thm
 ```
+runs a wordlist against the URL to brute-force hidden directories/pages.
