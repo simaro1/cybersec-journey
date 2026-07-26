@@ -4,7 +4,7 @@
 **Date:** July 26 2026
 
 ## The gist
-One or two lines. What is this thing, in plain language?
+the different types of tools used in the process of reading, transferring, and configuring network devices.
 
 ## Key points
 Router routes traffic between ip subnets, aka "layer 3 switches" layer2/layer3. connects LAN, WAN, copper, fiber
