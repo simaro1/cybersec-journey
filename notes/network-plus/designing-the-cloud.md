@@ -4,7 +4,7 @@
 **Date:** July 30 2026
 
 ## The gist
-
+How cloud networks and virtual networks function. How you can deploy them and connect them with one another from the cloud to networks. 
 
 ## Key points
 Virtual networks are servers with hundreds of virtual servers inside of them linking them all together
