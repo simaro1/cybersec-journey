@@ -4,7 +4,7 @@
 **Date:** July 31 2026
 
 ## The gist
-
+The different types of protocols, which port numbers they use and how to send data across different types of methods, devices through the networks. 
 
 
 ## Key points
