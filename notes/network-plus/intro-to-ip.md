@@ -68,7 +68,54 @@ DNS - Domain Name system. uses UDP/53, converts names to ip addresses. www.cyber
 you can use TCP/53. 
 Very critical, multiple DNS servers are in production. 
 
-DHCP(continue from where you left off, minute 6:22) 
+DHCP configures ip addresses automatically, subnet mask and others. uses udp/67, udp/68. uses dhcp serve. uses SOHO router
+dynamic/pooled adressed in real time, and has a lease that must be renewed at intervals. Can also reserve addresses using MAC address of device
+
+TFTP Trivial file transfer protocol. Uses udp/69. used for simple file transfer apps. Reads files and writes files. No AUTH, not secure. uses DHCP to get ip, tftp to transfer files fast and easy. 
+
+HTTP and HTTPS - Hyper text transfer Protocol. communication through browser. If no encryption, uses tcp/80, if encrypted, uses SSL(Secure sockets layer) or TLS(Transport layer security), uses tcp/443. sends HTTPS for secure. 
+
+NTP - Network time protocol. any devices(Switches routers, firewalls, servers etc) has its own synchronized clock using udp/123. Critical for log files, auth info, outage details. updates automatically, also flexible and you can control how they are upodated. Very accurate, 1 ms difference between devices on a network. 
+
+SNMP - Simple Network management Protocol. uses udp/161 to query devices and receive info on device performance. Diff versions may be used, v1 is original. alows single query for single response, in the clear. V2 allows bulk transfers, receive and send large data, still in the clear(no encrypt). V3 secure standard, message integrity, authentication, and encryption. 
+
+LDAP / LDAPS (Lightweight directory access protocol) uses tcp/389. A form of database, store and retrieve info in a network directory. LDAPS is secure, nonstandard version. uses tcp/636. LDAP is hiearchal, look at example (2.1). For example, O would be organization, OU would be under O for example "production" or "Engineering" and CN(Common name) would be a device or a file directory like "Tech docs".
+
+SMB - Server Message block. Microsoft unique feature for file sharing, printer sharing. also called CIFS (COmmon Internet file system). integrated into windows OS. Allows file share, remote printing, and file locking. direct over tcp/445
+
+Syslog - standard for message logging. Diverse systems, consolidates log. uses udp/514. Central log collecter, integrated into SIEM(Security info and event manager) Need a lot of disk space. 
+
+Databases - collection of info. SQL (Structure Query Language) standard language across database servers.
+MS-SQL uses tcp/1433.
+RDP - Remote Desktop Protocol. Uses tcp 3389. Allows you to view remote desktop. RDP clients exist for Windows, MacOS, iphone etc. 
+
+SIP - Session intiiation protocol. VoIP signaling. uses tcp/5060 and tcp/5061. used as control protocol. (Call, ring, play b usy signal, hangup) can video conference, instant message, file transfer etc. 
+
+ICMP Internet control message protocol. Text messaging for your network devivces. Not for data transfer, carried by IP. A way to send a msg to device to see if its alive. For example, ping command. uses ICMP. Can also tell you if a network is unreachable, or TTL expired in a deveice. 
+
+GRE Generic routing encapsulation. Tunnel between two endpoints. Encapsulate info, send across tunnel, and decapsulate. Not encrypted. 
+
+VPNs, encrypted data traversing public network. Can use concentrators that encrypt/decrypt access device. 
+
+IPSec(Internet protocol security) Security for OSI layer 3. Authentication and encryption for every packet. provides signatures for every packet. Very standard protocol, two diff manufacture firewalls can communicate. Authentication Header(AH) and Encapsulation Payload(ESP) 
+
+For IPSec to send data, create tunnel using Internet Key exchange(IKE), allows both side to agree on decrypt/encrypt keys.
+Builds security association (SA). First Phase uses Diffie-Hellman to create shared secret key. uses udp/500. Rferred to as ISAKMP(Internet security assoctiatoinon and key maangement protocol) Phase 2. Coordinates ciphers and key sizes, negotriates an inbound and outbound SA for IPsec. look at example (3.1) 
+
+Transport mode and tunnel mode. If we wanna send data using transport mode, use IPsec Header between IP header and data, but its in the clear.
+Tunnel mode all data is encrypted. Adds New IP header(Includes destination of IPsec trailer) 
+
+Authentication Header(AH) used to valdiate info receiving over IPsec tunnel. if only using AH, you send data in the clear but using additional hashing for keeping integrity of data. 
+Encapsulation Security Payload(ESP encrypts the packet, puts ESP Header infront of data, and New IP Header infront of ESP header and Integrity check value at end of packet. 
+
+Unicast 1:1 relationship. Sent between 2 stations. If web surfing, file transfering or email, all uses unicast. Does not scale optimally for real time streaming media. IPv4 and IPv6 uses it.,
+
+Multicast - one to many of many. Multimedia delivery, stock exchange uses this. Very specialized. Hard to scale across large networks. used in both IPv4 and IPv6(a lot)
+
+Anycast - one-to-one-of-many. Uses ipv4 and ipv6. Sends to single unicast address, whatever devices is closest receives traffic. For example anycast DNS requests. 
+
+Broadcast One-to-all. One received by everyone, limimted to a broadcast domain, good for routing updates, ARP requests. used in IPv4, not used in IPv6. 
+
 
 ## Example
 (1.1): 
@@ -124,6 +171,44 @@ Client                                                          Server
         IP layer                  TCP/UDP layer            payload
 ````
 
+(2.1):
+````
+                          [ Root ]
+                     ┌───────────────┐
+                     │ Messer Studios│  (O)
+                     └───────┬───────┘
+             ┌───────────────┼────────────────┐
+             │               │                │
+      ┌──────┴─────┐  ┌──────┴─────┐   ┌──────┴──────┐
+      │ Production │  │  Support   │   │ Engineering │
+      │    (OU)    │  │    (OU)    │   │    (OU)     │
+      └──────┬─────┘  └────────────┘   └──────┬──────┘
+         ┌───┴────┐              ┌────────────┼────────────┐
+         │        │              │            │            │
+      ┌──┴──┐ ┌───┴───┐      ┌───┴───┐  ┌─────┴─────┐  ┌───┴──┐
+      │Jack │ │Daniel │      │Teal'c │  │ Tech Docs │  │ Sam  │
+      │(CN) │ │ (CN)  │      │ (CN)  │  │   (CN)    │  │(CN)  │
+      └─────┘ └───────┘      └───────┘  └───────────┘  └──────┘
+                                          [resource]
+````
+
+(3.1): 
+````
+PHASE 1
+                 ╭──────────────────────────────────╮
+  ┌────────┐     │        ISAKMP Tunnel             │     ┌────────┐
+  │ Router │·····│           udp/500                │·····│ Router │
+  └────────┘     ╰──────────────────────────────────╯     └────────┘
+
+
+PHASE 2
+                 ╭──────────────────────────────────╮
+  ┌────────┐     │        ISAKMP Tunnel             │     ┌────────┐
+  │ Router │·····│ ┌──────────────────────────────┐ │·····│ Router │
+  └────────┘     │ │        ESP Tunnel            │ │     └────────┘
+                 │ └──────────────────────────────┘ │
+                 ╰──────────────────────────────────╯
+````
 
 ## Didn't stick / revisit
 
